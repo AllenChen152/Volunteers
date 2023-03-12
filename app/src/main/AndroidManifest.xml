@@ -47,6 +47,12 @@
         <activity android:name=".tool.BaseActivity"
             android:exported="false">
         </activity>
+        <activity android:name=".user_message"
+            android:exported="false">
+        </activity>
+        <activity android:name=".join_activity"
+            android:exported="false">
+        </activity>
         <activity
             android:name=".MainActivity"
 

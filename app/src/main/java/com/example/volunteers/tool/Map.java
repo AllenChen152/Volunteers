@@ -396,7 +396,7 @@ public class Map extends BaseActivity implements SensorEventListener, View.OnCli
             if (mDistance <= DISTANCE) {
                 Toast.makeText(this, "打卡成功", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "外勤打卡", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "距离太远，无法打卡，请前往指定地点！", Toast.LENGTH_SHORT).show();
             }
 
         }

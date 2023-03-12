@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,15 +19,20 @@ import androidx.fragment.app.Fragment;
 
 public class Page3Fragment extends Fragment {
     Button b_login;
+    LinearLayout user_message,join_ac;
+    TextView t_u;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.person, container, false);
-        b_login = view.findViewById(R.id.b_login);
+        user_message=view.findViewById(R.id.ll_info);
+        join_ac=view.findViewById(R.id.ll_order);
+        t_u=view.findViewById(R.id.tv_username);
+        b_login = view.findViewById(R.id.btn_out);
         SharedPreferences sp = getActivity().getSharedPreferences("user", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         String user = sp.getString("username", "");
         if (user.equals("")) {
-            b_login.setOnClickListener(new View.OnClickListener() {
+            t_u.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), LoginActivity.class);
@@ -35,7 +42,7 @@ public class Page3Fragment extends Fragment {
             });
 
         } else {
-            b_login.setText(user);
+            t_u.setText(user);
             b_login.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -48,7 +55,7 @@ public class Page3Fragment extends Fragment {
 
                         }
                     });
-                    builder.setNegativeButton("确定退出", new DialogInterface.OnClickListener() {
+                    builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             editor.clear();
@@ -61,6 +68,23 @@ public class Page3Fragment extends Fragment {
                 }
             });
         }
+
+        user_message.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), user_message.class);
+                startActivity(intent);
+            }
+        });
+
+        join_ac.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), join_activity.class);
+                startActivity(intent);
+            }
+        });
+
         return view;
     }
 }
