@@ -4,6 +4,7 @@ import static com.baidu.mshield.x0.EngineImpl.mContext;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.hardware.Sensor;
@@ -50,12 +51,21 @@ import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.baidu.platform.comapi.basestruct.Point;
 import com.example.volunteers.R;
+import com.mysql.jdbc.Statement;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Map extends BaseActivity implements SensorEventListener, View.OnClickListener {
     /**
@@ -83,6 +93,15 @@ public class Map extends BaseActivity implements SensorEventListener, View.OnCli
     private Double lastX = 0.0;
     Geocoder geocoder;
     String loc;
+    int  taskid;
+    SharedPreferences sp;
+    int sn;
+    String user = "root";
+    String password = "Sql1234.";
+    String ur1 = "jdbc:mysql://sh-cynosdbmysql-grp-m20d79p8.sql.tencentcdb.com:21440/volunteer";
+    Connection conn = null;
+    Statement stmt = null,stmt1=null;
+    PreparedStatement p = null,p1=null;
 
     @Override
     protected int getConentView() {
@@ -108,8 +127,14 @@ public class Map extends BaseActivity implements SensorEventListener, View.OnCli
 
         getLocationClientOption();//2、定位开启
 
+        sp = getSharedPreferences("user", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        sn = sp.getInt("s_n",0);
+
+
         mHandler.post(run);//设置系统时间
         loc = getIntent().getStringExtra("location");
+        taskid=getIntent().getIntExtra("task_code",0);
         mDistance_tv = (TextView) findViewById(R.id.distance_tv);
         mTime_tv = (TextView) findViewById(R.id.arriver_timetv);
         commit_bt = (RelativeLayout) findViewById(R.id.arriver_bt);
@@ -394,12 +419,81 @@ public class Map extends BaseActivity implements SensorEventListener, View.OnCli
     public void onClick(View view) {
         if (view.getId() == R.id.arriver_bt) {
             if (mDistance <= DISTANCE) {
-                Toast.makeText(this, "打卡成功", Toast.LENGTH_SHORT).show();
+                Set<String> participatedTasks = new HashSet<>();
+                Set<String> finishTasks = new HashSet<>();
+                String Id= String.valueOf(taskid);
+                String sql1 = "SELECT p_tasks,a_tasks FROM user WHERE sn='" + sn + "'";
+                ResultSet rs1=null;
+                try {
+                    conn = DriverManager.getConnection(ur1, user, password);
+                    Class.forName("com.mysql.jdbc.Driver");
+
+                    stmt1 = (Statement) conn.createStatement();
+                    rs1= stmt1.executeQuery(sql1);
+                    if(rs1.next()){
+                        String participatedTaskStr = rs1.getString(1);
+                        String finishTaskStr=rs1.getString(2);
+                        if (participatedTaskStr != null) {
+                            String[] participatedTaskArray = participatedTaskStr.split(",");
+                            participatedTasks.addAll(Arrays.asList(participatedTaskArray));
+                        }
+                        if(finishTaskStr!=null){
+                            String[] finishTaskArray = finishTaskStr.split(",");
+                            finishTasks.addAll(Arrays.asList(finishTaskArray));
+                        }
+                        signin(finishTasks);
+                    }
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+
+                String sql3="select * from task where t_id='"+Id+"' AND end_time >= NOW() AND t_time <= NOW()";
+                ResultSet rs=null;
+                try {
+                    stmt = (Statement) conn.createStatement();
+                    rs = stmt.executeQuery(sql3);
+                    if(rs.next()){
+
+                        Set<String> newFinishTasks = new HashSet<>(finishTasks);
+                        if (newFinishTasks.contains(Id)) {
+                            Toast.makeText(this, "已经打过卡", Toast.LENGTH_SHORT).show();
+                        }else{
+                            newFinishTasks.add(Id);
+                            String joinedFinishTasks = String.join(",", newFinishTasks);
+                            String sql2 = "UPDATE user SET a_tasks=? WHERE sn=?";
+
+                            try {
+                                p = conn.prepareStatement(sql2);
+                                p.setString(1,joinedFinishTasks);
+                                p.setInt(2,sn);
+                                p.executeUpdate();
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e);
+                            }
+                            Toast.makeText(this, "打卡成功", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }else{
+                        Toast.makeText(this, "请在规定时间段打卡！！", Toast.LENGTH_SHORT).show();
+                    }
+
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+
+
+
             } else {
                 Toast.makeText(this, "距离太远，无法打卡，请前往指定地点！", Toast.LENGTH_SHORT).show();
             }
 
         }
+    }
+
+    private void signin(Set<String> finishTasks) {
+
     }
 
     @Override

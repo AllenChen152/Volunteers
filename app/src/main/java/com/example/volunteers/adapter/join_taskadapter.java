@@ -43,7 +43,7 @@ public class join_taskadapter extends ArrayAdapter<task> {
         time.setText(format.format(tasks.getTime()));
         sum.setText(String.valueOf(tasks.getSump()));
 
-        // 将任务的 ID 存储在 Tag 中
+
         view.setTag(tasks.getId());
         // 设置点击事件
         view.setOnClickListener(new View.OnClickListener() {
@@ -58,16 +58,7 @@ public class join_taskadapter extends ArrayAdapter<task> {
                 }
             }
         });
-/*// 如果该任务已经报名，将按钮状态设置为不可点击，并将背景色改为灰色
-        if (tasks.isJoined()) {
-            joinBtn.setEnabled(false);
-            joinBtn.setBackgroundColor(Color.GRAY);
-        }
-        // 否则，将按钮状态设置为可点击，并将背景色改为白色
-        else {
-            joinBtn.setEnabled(true);
-            joinBtn.setBackgroundColor(Color.WHITE);
-        }*/
+
         return view;
     }
 

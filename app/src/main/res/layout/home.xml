@@ -4,15 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_height="?attr/actionBarSize"
+    <TextView
+        android:id="@+id/tv_usercenter"
         android:layout_width="match_parent"
-        android:background="@android:color/transparent"
-        android:elevation="0dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        />
+        android:layout_height="45dp"
+        android:background="#22349C"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="主页"
+        android:textColor="#fff"
+        android:textSize="20sp" />
 
     <com.youth.banner.Banner
         android:id="@+id/banner"
@@ -38,6 +39,7 @@
     <ListView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+
         android:divider="#000000"
         android:id="@+id/task_listView"/>
     </com.example.volunteers.tool.RefreshableView>

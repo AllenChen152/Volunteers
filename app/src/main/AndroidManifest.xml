@@ -55,6 +55,14 @@
         </activity>
         <activity
             android:name=".MainActivity"
+            android:exported="false">
+        </activity>
+        <activity
+            android:name=".publish"
+            android:exported="false">
+        </activity>
+        <activity
+            android:name=".tool.GuideActivity"
 
             android:exported="true">
             <intent-filter>

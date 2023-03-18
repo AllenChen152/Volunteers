@@ -3,6 +3,7 @@ package com.example.volunteers;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -44,7 +45,7 @@ public class Page1Fragment extends Fragment {
     String ur1 = "jdbc:mysql://sh-cynosdbmysql-grp-m20d79p8.sql.tencentcdb.com:21440/volunteer";
     Connection conn = null;
     Statement stmt = null,stmt1=null;
-    PreparedStatement p = null;
+    PreparedStatement p = null,p1=null;
     SharedPreferences sp;
     int sn;
     private RefreshableView refreshableView;
@@ -68,7 +69,7 @@ public class Page1Fragment extends Fragment {
                     conn = DriverManager.getConnection(ur1, user, password);
                     Class.forName("com.mysql.jdbc.Driver");
                     stmt = (Statement) conn.createStatement();
-                    String sql2="select * from task";
+                    String sql2="select * from task where end_time >= NOW()";
                     ResultSet rs = stmt.executeQuery(sql2);
 
                     while(rs.next()){
@@ -140,11 +141,33 @@ public class Page1Fragment extends Fragment {
                                             if (newParticipatedTasks.contains(taskId)) {
                                                 //已报名，弹出提示框
                                                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                                                builder.setMessage("您已报名该活动！");
-                                                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                                builder.setMessage("您已报名该活动，是否取消报名");
+                                                builder.setPositiveButton("取消", new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         // do nothing
+                                                    }
+                                                });
+                                                builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        newParticipatedTasks.remove(taskId);
+                                                        String deletparticipatedTasks=String.join(",", newParticipatedTasks);
+                                                        String sql = "UPDATE user SET p_tasks=? WHERE sn=?";
+                                                        String sql0="UPDATE task SET t_sum=t_sum-1 WHERE t_id=?";
+
+                                                        try {
+                                                            p = conn.prepareStatement(sql);
+                                                            p.setString(1,deletparticipatedTasks);
+                                                            p.setInt(2,sn);
+                                                            p.executeUpdate();
+
+                                                            p1=conn.prepareStatement(sql0);
+                                                            p1.setString(1,taskId);
+                                                            p1.executeUpdate();
+                                                        } catch (SQLException e) {
+                                                            throw new RuntimeException(e);
+                                                        }
                                                     }
                                                 });
                                                 builder.show();
@@ -153,6 +176,7 @@ public class Page1Fragment extends Fragment {
                                                 newParticipatedTasks.add(taskId);
                                                 String joinedParticipatedTasks = String.join(",", newParticipatedTasks);
                                                 String sql = "UPDATE user SET p_tasks=? WHERE sn=?";
+                                                String sql0="UPDATE task SET t_sum=t_sum+1 WHERE t_id=?";
                                                 try {
                                                     conn = DriverManager.getConnection(ur1, user, password);
                                                     Class.forName("com.mysql.jdbc.Driver");
@@ -160,6 +184,10 @@ public class Page1Fragment extends Fragment {
                                                     p.setString(1,joinedParticipatedTasks);
                                                     p.setInt(2,sn);
                                                     p.executeUpdate();
+
+                                                    p1=conn.prepareStatement(sql0);
+                                                    p1.setString(1,taskId);
+                                                    p1.executeUpdate();
                                                 } catch (SQLException e) {
                                                     throw new RuntimeException(e);
                                                 } catch (ClassNotFoundException e) {
@@ -378,7 +406,7 @@ public class Page1Fragment extends Fragment {
                     conn = DriverManager.getConnection(ur1, user, password);
                     Class.forName("com.mysql.jdbc.Driver");
                     stmt = (Statement) conn.createStatement();
-                    String sql = "select * from task";
+                    String sql = "select * from task where end_time >= NOW()";
                     ResultSet rs = stmt.executeQuery(sql);
                     while (rs.next()) {
                         String id = rs.getString("t_id");
@@ -446,11 +474,33 @@ public class Page1Fragment extends Fragment {
                                             if (newParticipatedTasks.contains(taskId)) {
                                                 //已报名，弹出提示框
                                                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                                                builder.setMessage("您已报名该活动！");
-                                                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                                builder.setMessage("您已报名该活动,是否取消报名");
+                                                builder.setPositiveButton("取消", new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         // do nothing
+                                                    }
+                                                });
+                                                builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        newParticipatedTasks.remove(taskId);
+                                                        String deletparticipatedTasks=String.join(",", newParticipatedTasks);
+                                                        String sql = "UPDATE user SET p_tasks=? WHERE sn=?";
+                                                        String sql0="UPDATE task SET t_sum=t_sum-1 WHERE t_id=?";
+
+                                                        try {
+                                                            p = conn.prepareStatement(sql);
+                                                            p.setString(1,deletparticipatedTasks);
+                                                            p.setInt(2,sn);
+                                                            p.executeUpdate();
+
+                                                            p1=conn.prepareStatement(sql0);
+                                                            p1.setString(1,taskId);
+                                                            p1.executeUpdate();
+                                                        } catch (SQLException e) {
+                                                            throw new RuntimeException(e);
+                                                        }
                                                     }
                                                 });
                                                 builder.show();
@@ -459,6 +509,7 @@ public class Page1Fragment extends Fragment {
                                                 newParticipatedTasks.add(taskId);
                                                 String joinedParticipatedTasks = String.join(",", newParticipatedTasks);
                                                 String sql = "UPDATE user SET p_tasks=? WHERE sn=?";
+                                                String sql0="UPDATE task SET t_sum=t_sum+1 WHERE t_id=?";
                                                 try {
                                                     conn = DriverManager.getConnection(ur1, user, password);
                                                     Class.forName("com.mysql.jdbc.Driver");
@@ -466,6 +517,11 @@ public class Page1Fragment extends Fragment {
                                                     p.setString(1,joinedParticipatedTasks);
                                                     p.setInt(2,sn);
                                                     p.executeUpdate();
+
+
+                                                    p1=conn.prepareStatement(sql0);
+                                                    p1.setString(1,taskId);
+                                                    p1.executeUpdate();
                                                 } catch (SQLException e) {
                                                     throw new RuntimeException(e);
                                                 } catch (ClassNotFoundException e) {
