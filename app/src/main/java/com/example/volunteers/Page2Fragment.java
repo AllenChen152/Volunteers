@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,6 +58,9 @@ public class Page2Fragment extends Fragment {
     SharedPreferences sp;
     int sn;
     List<pyq> pyqs = new ArrayList<>(); // 用于保存查询结果
+    ListView ls;
+    pyqAdapter ad;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState){
@@ -74,77 +78,81 @@ public class Page2Fragment extends Fragment {
             }
         });
 
-        // 创建新线程来执行数据库查询操作
-        Thread queryThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    conn = DriverManager.getConnection(ur1, user, password);
-                    Class.forName("com.mysql.jdbc.Driver");
-                    stmt = (Statement) conn.createStatement();
-                    String sql2="select * from pyq ";
-                    ResultSet rs = stmt.executeQuery(sql2);
+        ls=view.findViewById(R.id.listp);
+        ad=new pyqAdapter((Context) getActivity(),R.layout.p_items, pyqs);
+        ls.setAdapter(ad);
 
-                    while(rs.next()){
-                        String id=rs.getString("p_id");
-                        String name=rs.getString("u_name");
-                        String text=rs.getString("p_text");
-                        String time=rs.getString("p_time");
-                        byte[] pic=rs.getBytes("p_picture");
-                        // 保存图像并获取其路径
-                        String fileName = "image_" + id + ".jpg"; // 在此使用id作为文件名，以便区分不同的图片
-                        String imagePath = saveImage(pic, fileName);
-
-                        Bitmap bitmap = null;
-                        if (imagePath != null) {
-                            bitmap = Glide.with(getActivity()).asBitmap().load(new File(imagePath)).submit().get();
-                        }
-                        pyq p = new pyq(name, id, text, time, bitmap);
-                        pyqs.add(p);
-                    }
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                } catch (ExecutionException e) {
-                    throw new RuntimeException(e);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-
-                // 更新UI元素等操作需要在UI线程中执行
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ListView ls=view.findViewById(R.id.listp);
-                        pyqAdapter ad=new pyqAdapter((Context) getActivity(),R.layout.p_items, pyqs);
-                        ls.setAdapter(ad);
-                    }
-                });
-            }
-        });
-
-        queryThread.start();
+        new QueryTask().execute();
 
         return view;
     }
 
+    private class QueryTask extends AsyncTask<Void, Void, List<pyq>> {
+
+        @Override
+        protected List<pyq> doInBackground(Void... voids) {
+            try {
+                conn = DriverManager.getConnection(ur1, user, password);
+                Class.forName("com.mysql.jdbc.Driver");
+                stmt = (Statement) conn.createStatement();
+                String sql2="select * from pyq ";
+                ResultSet rs = stmt.executeQuery(sql2);
+
+                while(rs.next()){
+                    String id=rs.getString("p_id");
+                    String name=rs.getString("u_name");
+                    String text=rs.getString("p_text");
+                    String time=rs.getString("p_time");
+                    byte[] pic=rs.getBytes("p_picture");
+                    // 保存图像并获取其路径
+                    String fileName = "image_" + id + ".jpg"; // 在此使用id作为文件名，以便区分不同的图片
+                    String imagePath = saveImage(pic, fileName);
+
+                    Bitmap bitmap = null;
+                    if (imagePath != null) {
+                        bitmap = Glide.with(getActivity()).asBitmap().load(new File(imagePath)).submit().get();
+                    }
+                    pyq p = new pyq(name, id, text, time, bitmap);
+                    pyqs.add(p);
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            return pyqs;
+        }
+
+
+        protected void onPostExecute(List<pyq> pyqs) {
+            ad.notifyDataSetChanged();
+        }
+    }
+
     private String saveImage(byte[] pic, String fileName) {
-        File dir = getActivity().getFilesDir(); // 获取应用程序缓存目录
-        if (!dir.exists()) {
-            dir.mkdirs();
+        String imagePath = null;
+        if (getActivity() != null) {
+            File dir = getActivity().getFilesDir(); // 获取应用程序缓存目录
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            try {
+                File imageFile = new File(dir, fileName);
+                FileOutputStream fos = new FileOutputStream(imageFile);
+                fos.write(pic);
+                fos.flush();
+                fos.close();
+                imagePath = imageFile.getAbsolutePath();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        try {
-            File imageFile = new File(dir, fileName);
-            FileOutputStream fos = new FileOutputStream(imageFile);
-            fos.write(pic);
-            fos.flush();
-            fos.close();
-            return imageFile.getAbsolutePath();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return imagePath;
     }
 }
 

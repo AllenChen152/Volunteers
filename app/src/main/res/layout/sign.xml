@@ -29,6 +29,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/listp"
+        android:divider="#CCCCCC"
+        android:dividerHeight="2px"
         android:layout_marginTop="45dp"
         />
 

@@ -62,6 +62,10 @@
             android:exported="false">
         </activity>
         <activity
+            android:name=".quanzi"
+            android:exported="false">
+        </activity>
+        <activity
             android:name=".tool.GuideActivity"
 
             android:exported="true">

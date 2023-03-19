@@ -1,22 +1,35 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/linearLayout7"
     android:layout_width="match_parent"
-    android:layout_height="150dp"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     >
-
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/tv_usercenter"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="#22349C"
+        android:gravity="center"
+        android:padding="10dp"
+        android:textColor="#fff"
+        android:textSize="20sp" >
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/back"
+            android:onClick="back1"
+            />
+    </androidx.appcompat.widget.Toolbar>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="250dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="5dp"
-        android:background="@drawable/list_shape"
-        >
 
+        >
 
         <ImageView
             android:layout_width="50dp"
@@ -29,8 +42,8 @@
 
         <ImageView
             android:id="@+id/imageView5"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
             android:layout_below="@id/textView3"
             android:layout_toRightOf="@id/view3"
             android:background="#123455"
@@ -40,19 +53,10 @@
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
-            android:layout_toLeftOf="@id/comment"
             android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
             android:layout_marginBottom="5dp"
             android:text="03-17 11:50" />
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/comment"
-            android:id="@+id/comment"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginRight="5dp"
-            />
 
 
         <TextView
@@ -74,10 +78,33 @@
             android:textSize="16dp" />
 
     </RelativeLayout>
+    <ListView
+        android:id="@+id/comment_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="10dp"
+        android:dividerHeight="0dp"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="bottom"
+        >
 
+        <EditText
+            android:id="@+id/comment_input"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="输入评论内容"/>
+
+        <Button
+            android:id="@+id/comment_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="评论"/>
+
+    </LinearLayout>
 </LinearLayout>
-
-
-
-

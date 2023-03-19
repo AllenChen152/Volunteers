@@ -9,7 +9,7 @@
     <item
         android:id="@+id/page_2"
         android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="签到"/>
+        android:title="圈子"/>
 
     <item
         android:id="@+id/page_3"

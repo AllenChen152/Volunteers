@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/linearLayout7"
     android:layout_width="match_parent"
-    android:layout_height="150dp"
+    android:layout_height="100dp"
     android:orientation="vertical"
     >
 
@@ -27,36 +26,18 @@
             android:background="@mipmap/touxiang"
             />
 
-        <ImageView
-            android:id="@+id/imageView5"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_below="@id/textView3"
-            android:layout_toRightOf="@id/view3"
-            android:background="#123455"
-            />
 
         <TextView
-            android:id="@+id/textView4"
+            android:id="@+id/c_time"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
-            android:layout_toLeftOf="@id/comment"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="5dp"
             android:text="03-17 11:50" />
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/comment"
-            android:id="@+id/comment"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginRight="5dp"
-            />
-
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/c_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/view3"
@@ -65,19 +46,15 @@
             android:textSize="18dp" />
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/c_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/textView"
+            android:layout_below="@id/c_name"
             android:layout_toRightOf="@id/view3"
-            android:text="我的第一个朋友圈！！！！！！！！！！"
+            android:text="我的第一条评论"
             android:textSize="16dp" />
 
     </RelativeLayout>
 
 
 </LinearLayout>
-
-
-
-
